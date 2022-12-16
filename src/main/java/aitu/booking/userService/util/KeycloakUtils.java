@@ -15,14 +15,10 @@ public class KeycloakUtils {
         UserDTO userDto = new UserDTO();
         userDto.setId(userRepresentation.getId());
         userDto.setPhone(userRepresentation.getUsername());
-        userDto.setName(getFullName(userRepresentation));
         userDto.setFirstName(userRepresentation.getFirstName());
         userDto.setLastName(userRepresentation.getLastName());
         userDto.setPatronymic(userRepresentation.firstAttribute("patronymic"));
         userDto.setEmail(userRepresentation.getEmail());
-
-        Instant instant = Instant.ofEpochMilli(userRepresentation.getCreatedTimestamp());
-        userDto.setCreatedAt(ZonedDateTime.ofInstant(instant, ZoneOffset.UTC));
 
         return userDto;
     }

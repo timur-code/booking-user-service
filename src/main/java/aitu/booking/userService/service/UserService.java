@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,7 +68,7 @@ public class UserService {
         return keycloakService.refreshToken(refreshToken);
     }
 
-    public UserDTO create(UserDTO user, String password) {
+    public UserDTO create(UserDTO user, String password) throws InstanceAlreadyExistsException {
         UserRepresentation userRepresentation = KeycloakUtils.convertToUserRepresentation(user);
         userRepresentation.setEnabled(true);
         KeycloakUtils.setUserRepresentationPassword(userRepresentation, password);

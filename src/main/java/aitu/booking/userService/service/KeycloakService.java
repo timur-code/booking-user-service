@@ -1,11 +1,13 @@
 package aitu.booking.userService.service;
 
+import aitu.booking.userService.exception.ApiException;
 import lombok.extern.log4j.Log4j2;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.authorization.client.Configuration;
 import org.keycloak.authorization.client.util.Http;
+import org.keycloak.authorization.client.util.HttpResponseException;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -20,6 +22,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import javax.management.InstanceAlreadyExistsException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
@@ -64,9 +67,6 @@ public class KeycloakService {
                 .toRepresentation();
     }
 
-    /**
-     * Get by username(phone)
-     */
     public UserRepresentation getUserByUsername(String username) {
         List<UserRepresentation> list = getMasterKeycloakInstance()
                 .realm(realmName)
@@ -76,9 +76,6 @@ public class KeycloakService {
         return list.size() > 0 ? list.get(0) : null;
     }
 
-    /**
-     * @param searchStr - A String contained in username, first or last name, or email
-     */
     public List<UserRepresentation> search(String searchStr, Integer from, Integer to) {
         return getMasterKeycloakInstance().realm(realmName).users().search(searchStr, from, to - from);
     }
@@ -87,16 +84,18 @@ public class KeycloakService {
         return getMasterKeycloakInstance().realm(realmName).users().count(searchStr);
     }
 
-    /**
-     * @return User uuid
-     */
-    public String createUser(UserRepresentation userRepresentation) {
+    public String createUser(UserRepresentation userRepresentation) throws InstanceAlreadyExistsException {
         if (CollectionUtils.isEmpty(userRepresentation.getGroups())) {
             userRepresentation.setGroups(Arrays.asList(GROUP_USERS));
         }
 
         RealmResource realm = getMasterKeycloakInstance().realm(realmName);
         Response response = realm.users().create(userRepresentation);
+
+        if (response.getStatus() == 409) {
+            log.info("User {} already exists.", userRepresentation.getUsername());
+            throw new InstanceAlreadyExistsException();
+        }
 
         if (response.getStatus() < 200 || response.getStatus() > 299) {
             String error = "User create error: " + response.readEntity(String.class);
@@ -154,17 +153,24 @@ public class KeycloakService {
         Configuration kcConfig = new Configuration(serverUrl, realmName, clientId, null, null);
         Http http = new Http(kcConfig, (params, headers) -> {
         });
-        return http.<AccessTokenResponse>post(url)
-                .authentication()
-                .client()
-                .form()
-                .param("grant_type", "refresh_token")
-                .param("refresh_token", refreshToken)
-                .param("client_id", clientId)
-                .param("client_secret", clientSecret)
-                .response()
-                .json(AccessTokenResponse.class)
-                .execute();
+        try {
+            return http.<AccessTokenResponse>post(url)
+                    .authentication()
+                    .client()
+                    .form()
+                    .param("grant_type", "refresh_token")
+                    .param("refresh_token", refreshToken)
+                    .param("client_id", clientId)
+                    .param("client_secret", clientSecret)
+                    .response()
+                    .json(AccessTokenResponse.class)
+                    .execute();
+        } catch (HttpResponseException ex) {
+            if (ex.toString().contains("Session not active")) {
+                throw new ApiException(401, "user.not-logged-in");
+            }
+            throw ex;
+        }
     }
 
     public void resetPassword(String username, String password) {
