@@ -5,7 +5,7 @@ A microservice that focuses on user authorization. It uses keycloak as identity 
 
 ## Deployment
 
-Before first project install, run docker command
+Before first project install, run docker command to install Kecloak for identity access and management.
 
 ```bash
   docker run --name booking-keycloak -p 8083:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:18.0.1 start-dev
