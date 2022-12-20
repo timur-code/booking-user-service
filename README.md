@@ -40,5 +40,5 @@ To access API documentation of this service, run project and go to [Local API Do
 
 This microservice is a part of bigger picture for the booking diploma project.
 
-[booking-user-service](https://github.com/timur-code/booking-user-service)
-[booking-service](https://github.com/timur-code/booking-service)
+- [booking-user-service](https://github.com/timur-code/booking-user-service)
+- [booking-service](https://github.com/timur-code/booking-service)
