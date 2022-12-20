@@ -22,7 +22,7 @@ To deploy this project run from the project's directory
 
 ## Documentation
 
-To access API documentation of this service, run project and go to http://localhost:9000/swagger-ui/index.html 
+To access API documentation of this service, run project and go to [Local API Documentation](http://localhost:9000/swagger-ui/index.html)
 ## Authors
 
 - [@timur-code](https://www.github.com/timur-code)
@@ -40,5 +40,5 @@ To access API documentation of this service, run project and go to http://localh
 
 This microservice is a part of bigger picture for the booking diploma project.
 
-
-booking-service (TBA)
+[booking-user-service](https://github.com/timur-code/booking-user-service)
+[booking-service](https://github.com/timur-code/booking-service)
