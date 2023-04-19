@@ -18,3 +18,12 @@ services:
         condition: on-failure
         delay: 1s
         max_attempts: 3
+  keycloak:
+    container_name: booking-keycloak
+    image: quay.io/keycloak/keycloak:18.0.1
+    command: ["start-dev"]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8083:8080"
