@@ -1,10 +1,12 @@
 package aitu.booking.userService.service;
 
+import aitu.booking.userService.dto.UserInfoDTO;
 import aitu.booking.userService.dto.UserDTO;
 import aitu.booking.userService.util.KeycloakUtils;
 import lombok.extern.log4j.Log4j2;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -23,6 +25,14 @@ public class UserService {
     public UserDTO findUserByPhone(String phone) {
         UserRepresentation user = keycloakService.getUserByUsername(phone);
         return user == null ? null : KeycloakUtils.convertToUserDTO(user);
+    }
+
+    public UserInfoDTO getMe(Authentication authentication) {
+        String id = KeycloakUtils.getUserUuidFromAuth(authentication).toString();
+        UserDTO dto = findById(id);
+        UserInfoDTO response = new UserInfoDTO();
+        BeanUtils.copyProperties(dto, response);
+        return response;
     }
 
 //    @Cacheable(value = CacheConfig.CACHE_USER)

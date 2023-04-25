@@ -4,6 +4,7 @@ import aitu.booking.userService.controller.BaseController;
 import aitu.booking.userService.dto.LoginByPhoneFormDTO;
 import aitu.booking.userService.dto.RefreshTokenDTO;
 import aitu.booking.userService.dto.UserDTO;
+import aitu.booking.userService.dto.UserInfoDTO;
 import aitu.booking.userService.dto.responses.ResponseFail;
 import aitu.booking.userService.dto.responses.ResponseSuccess;
 import aitu.booking.userService.dto.responses.ResponseSuccessWithData;
@@ -17,13 +18,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.validation.Valid;
@@ -56,6 +56,21 @@ public class UserController extends BaseController {
     public ResponseToken loginUser(@RequestBody @Valid LoginByPhoneFormDTO loginDTO) {
         AccessTokenResponse token = userService.login(loginDTO.getPhone(), loginDTO.getPassword());
         return new ResponseToken(token);
+    }
+
+    @Secured("ROLE_admin")
+    @PostMapping("/is-admin")
+    public ResponseEntity<ResponseSuccess> isAdmin() {
+        return ResponseEntity.ok(new ResponseSuccess());
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "Get user info by token",
+            description = "Get user info by token.")
+    @ApiResponse(responseCode = "200", description = "Get user info by token.")
+    public ResponseEntity<UserInfoDTO> loginUser(Authentication authentication) {
+        UserInfoDTO user = userService.getMe(authentication);
+        return ResponseEntity.ok(user);
     }
 
     @Secured({"ROLE_user", "ROLE_admin"})
