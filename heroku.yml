@@ -4,22 +4,22 @@ build:
 run:
   web:
     image: booking/user-service
-    env:
-      SERVER_PORT: 9000
-      JAVA_TOOL_OPTIONS: "-Xmx512m"
-      KEYCLOAK_AUTH_SERVER_URL: "http://keycloak:8080/auth"
-    ports:
-      - $PORT:9000
-      - "9000:9000"
+    # env:
+    #   SERVER_PORT: 9000
+    #   JAVA_TOOL_OPTIONS: "-Xmx512m"
+    #   KEYCLOAK_AUTH_SERVER_URL: "http://keycloak:8080/auth"
+    # ports:
+    #   - $PORT:9000
+    #   - "9000:9000"
     command:
       - java
       - -jar
       - app.jar
   keycloak:
     image: quay.io/keycloak/keycloak:18.0.1
-    env:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-    ports:
-      - $PORT:8080
-      - "8083:8080"
+    # env:
+    #   KEYCLOAK_ADMIN: admin
+    #   KEYCLOAK_ADMIN_PASSWORD: admin
+#    ports:
+#      - $PORT:8080
+#      - "8083:8080"
