@@ -32,10 +32,10 @@ import javax.validation.Valid;
 public class UserController extends BaseController {
     private UserService userService;
 
-    @PostMapping("/create/restaurant-admin")
-    public ResponseEntity<?> createRestaurantAdmin(CreateRestaurantAdminDTO adminDTO) {
-
-    }
+//    @PostMapping("/create/restaurant-admin")
+//    public ResponseEntity<?> createRestaurantAdmin(CreateRestaurantAdminDTO adminDTO) {
+//
+//    }
 
     @PostMapping("/register")
     @Operation(summary = "Register new user",
