@@ -53,6 +53,7 @@ public class KeycloakService {
     private String clientSecret;
 
     private String GROUP_USERS = "users";
+    private String GROUP_RES_ADMIN = "restaurant_admins";
 
     public Keycloak getMasterKeycloakInstance() {
         log.info("[KEYCLOAK] Server: {}", serverUrl);
@@ -107,6 +108,33 @@ public class KeycloakService {
         String location = response.getMetadata().get("Location").get(0).toString();
         String uuid = location.substring(location.lastIndexOf("/") + 1);
         log.info("User created: " + uuid);
+
+        return uuid;
+    }
+
+    public String createRestaurantAdmin(UserRepresentation userRepresentation) throws InstanceAlreadyExistsException {
+        if (CollectionUtils.isEmpty(userRepresentation.getGroups())) {
+            userRepresentation.setGroups(Arrays.asList(GROUP_RES_ADMIN));
+        }
+
+        RealmResource realm = getMasterKeycloakInstance().realm(realmName);
+        Response response = realm.users().create(userRepresentation);
+
+        if (response.getStatus() == 409) {
+            log.info("User {} already exists.", userRepresentation.getUsername());
+            throw new InstanceAlreadyExistsException();
+        }
+
+        if (response.getStatus() < 200 || response.getStatus() > 299) {
+            String error = "User create error: " + response.readEntity(String.class);
+            log.error(error);
+            throw new RuntimeException(error);
+        }
+
+        // Extract the uuid of the user we just created.
+        String location = response.getMetadata().get("Location").get(0).toString();
+        String uuid = location.substring(location.lastIndexOf("/") + 1);
+        log.info("Restaurant Admin created: " + uuid);
 
         return uuid;
     }

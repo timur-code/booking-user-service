@@ -1,5 +1,6 @@
 package aitu.booking.userService.service;
 
+import aitu.booking.userService.dto.CreateRestaurantAdminDTO;
 import aitu.booking.userService.dto.UserInfoDTO;
 import aitu.booking.userService.dto.UserDTO;
 import aitu.booking.userService.util.KeycloakUtils;
@@ -86,6 +87,16 @@ public class UserService {
         user.setId(id);
 
         return user;
+    }
+
+    public CreateRestaurantAdminDTO createRestaurantAdmin(CreateRestaurantAdminDTO adminDTO, String password) throws InstanceAlreadyExistsException {
+        UserRepresentation userRepresentation = KeycloakUtils.convertToUserRepresentation(adminDTO);
+        userRepresentation.setEnabled(true);
+        KeycloakUtils.setUserRepresentationPassword(userRepresentation, password);
+        String id = keycloakService.createRestaurantAdmin(userRepresentation);
+        adminDTO.setId(id);
+
+        return adminDTO;
     }
 
 //    @CacheEvict(value = CacheConfig.CACHE_USER, key = "#user.id")

@@ -17,6 +17,9 @@ public class CreateRestaurantAdminDTO {
 
     private String id;
 
+    @NotNull(message = "{firstName.required}")
+    @NotBlank(message = "{firstName.required}")
+    private String name;
     private Long restaurantId;
     @NotNull(message = "{phone.required}")
     @NotBlank(message = "{phone.required}")

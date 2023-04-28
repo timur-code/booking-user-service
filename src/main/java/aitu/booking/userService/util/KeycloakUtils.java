@@ -1,6 +1,8 @@
 package aitu.booking.userService.util;
 
+import aitu.booking.userService.dto.CreateRestaurantAdminDTO;
 import aitu.booking.userService.dto.UserDTO;
+import lombok.extern.log4j.Log4j2;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.security.core.Authentication;
@@ -11,8 +13,10 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 
+@Log4j2
 public class KeycloakUtils {
     public static UserDTO convertToUserDTO(UserRepresentation userRepresentation) {
         UserDTO userDto = new UserDTO();
@@ -35,6 +39,20 @@ public class KeycloakUtils {
         userRepresentation.setEmail(userDTO.getEmail());
         userRepresentation.singleAttribute("patronymic", StringUtils.hasLength(userDTO.getPatronymic()) ? userDTO.getPatronymic() : null);
         userRepresentation.singleAttribute("phone", userDTO.getPhone());
+
+        return userRepresentation;
+    }
+
+    public static UserRepresentation convertToUserRepresentation(CreateRestaurantAdminDTO adminDTO) {
+        UserRepresentation userRepresentation = new UserRepresentation();
+        userRepresentation.setId(adminDTO.getId());
+        userRepresentation.setUsername(adminDTO.getPhone());
+        userRepresentation.setFirstName(adminDTO.getName());
+        userRepresentation.setEmail(adminDTO.getEmail());
+        userRepresentation.singleAttribute("phone", adminDTO.getPhone());
+        if (Objects.nonNull(adminDTO.getRestaurantId())) {
+            userRepresentation.singleAttribute("restaurantId", adminDTO.getRestaurantId().toString());
+        }
 
         return userRepresentation;
     }

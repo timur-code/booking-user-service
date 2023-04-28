@@ -32,10 +32,14 @@ import javax.validation.Valid;
 public class UserController extends BaseController {
     private UserService userService;
 
-//    @PostMapping("/create/restaurant-admin")
-//    public ResponseEntity<?> createRestaurantAdmin(CreateRestaurantAdminDTO adminDTO) {
-//
-//    }
+    @PostMapping("/create/restaurant-admin")
+    public ResponseEntity<ResponseSuccessWithData<CreateRestaurantAdminDTO>> createRestaurantAdmin(@RequestBody CreateRestaurantAdminDTO adminDTO) {
+        try {
+            return ResponseEntity.ok(new ResponseSuccessWithData<>(userService.createRestaurantAdmin(adminDTO, adminDTO.getPassword())));
+        } catch (InstanceAlreadyExistsException ex) {
+            throw new ApiException(409, "user.exists");
+        }
+    }
 
     @PostMapping("/register")
     @Operation(summary = "Register new user",
