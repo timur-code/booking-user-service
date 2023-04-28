@@ -1,10 +1,7 @@
 package aitu.booking.userService.controller.api;
 
 import aitu.booking.userService.controller.BaseController;
-import aitu.booking.userService.dto.LoginByPhoneFormDTO;
-import aitu.booking.userService.dto.RefreshTokenDTO;
-import aitu.booking.userService.dto.UserDTO;
-import aitu.booking.userService.dto.UserInfoDTO;
+import aitu.booking.userService.dto.*;
 import aitu.booking.userService.dto.responses.ResponseFail;
 import aitu.booking.userService.dto.responses.ResponseSuccess;
 import aitu.booking.userService.dto.responses.ResponseSuccessWithData;
@@ -34,6 +31,11 @@ import javax.validation.Valid;
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseFail.class)))
 public class UserController extends BaseController {
     private UserService userService;
+
+    @PostMapping("/create/restaurant-admin")
+    public ResponseEntity<?> createRestaurantAdmin(CreateRestaurantAdminDTO adminDTO) {
+
+    }
 
     @PostMapping("/register")
     @Operation(summary = "Register new user",
