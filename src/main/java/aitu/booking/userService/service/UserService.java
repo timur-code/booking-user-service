@@ -3,12 +3,14 @@ package aitu.booking.userService.service;
 import aitu.booking.userService.dto.CreateRestaurantAdminDTO;
 import aitu.booking.userService.dto.UserInfoDTO;
 import aitu.booking.userService.dto.UserDTO;
+import aitu.booking.userService.exception.ApiException;
 import aitu.booking.userService.util.KeycloakUtils;
 import lombok.extern.log4j.Log4j2;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,8 @@ import java.util.stream.Collectors;
 @Log4j2
 public class UserService {
     private KeycloakService keycloakService;
+    @Value("${service.user.token}")
+    private String serviceToken;
 
 
     public UserDTO findUserByPhone(String phone) {
@@ -36,7 +40,7 @@ public class UserService {
         return response;
     }
 
-//    @Cacheable(value = CacheConfig.CACHE_USER)
+    //    @Cacheable(value = CacheConfig.CACHE_USER)
     public UserDTO findById(String id) {
         return KeycloakUtils.convertToUserDTO(keycloakService.getUserById(id));
     }
@@ -89,17 +93,23 @@ public class UserService {
         return user;
     }
 
-    public CreateRestaurantAdminDTO createRestaurantAdmin(CreateRestaurantAdminDTO adminDTO, String password) throws InstanceAlreadyExistsException {
+    //TODO:TEST
+    public CreateRestaurantAdminDTO createRestaurantAdmin(CreateRestaurantAdminDTO adminDTO, String password, String token) throws InstanceAlreadyExistsException {
+        if (!token.equals(serviceToken)) {
+            log.error("\ntoken: {}, \nreceived:{}", serviceToken, token);
+            throw new ApiException(403, "token.required");
+        }
         UserRepresentation userRepresentation = KeycloakUtils.convertToUserRepresentation(adminDTO);
         userRepresentation.setEnabled(true);
         KeycloakUtils.setUserRepresentationPassword(userRepresentation, password);
         String id = keycloakService.createRestaurantAdmin(userRepresentation);
         adminDTO.setId(id);
 
+        adminDTO.setPassword(null);
         return adminDTO;
     }
 
-//    @CacheEvict(value = CacheConfig.CACHE_USER, key = "#user.id")
+    //    @CacheEvict(value = CacheConfig.CACHE_USER, key = "#user.id")
     public void update(UserDTO user) {
         keycloakService.updateUser(KeycloakUtils.convertToUserRepresentation(user));
     }
@@ -130,7 +140,7 @@ public class UserService {
     }
 
     private String getUserIdByAuth(Authentication authentication) {
-        return  ((JwtAuthenticationToken) authentication).getToken().getSubject();
+        return ((JwtAuthenticationToken) authentication).getToken().getSubject();
     }
 
     @Autowired

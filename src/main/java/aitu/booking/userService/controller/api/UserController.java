@@ -33,9 +33,10 @@ public class UserController extends BaseController {
     private UserService userService;
 
     @PostMapping("/create/restaurant-admin")
-    public ResponseEntity<ResponseSuccessWithData<CreateRestaurantAdminDTO>> createRestaurantAdmin(@RequestBody CreateRestaurantAdminDTO adminDTO) {
+    public ResponseEntity<CreateRestaurantAdminDTO> createRestaurantAdmin(@RequestBody CreateRestaurantAdminDTO adminDTO,
+                                                                                                   @RequestHeader(name = "service_token") String token) {
         try {
-            return ResponseEntity.ok(new ResponseSuccessWithData<>(userService.createRestaurantAdmin(adminDTO, adminDTO.getPassword())));
+            return ResponseEntity.ok(userService.createRestaurantAdmin(adminDTO, adminDTO.getPassword(), token));
         } catch (InstanceAlreadyExistsException ex) {
             throw new ApiException(409, "user.exists");
         }

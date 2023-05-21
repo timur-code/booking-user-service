@@ -47,8 +47,6 @@ public class KeycloakUtils {
         UserRepresentation userRepresentation = new UserRepresentation();
         userRepresentation.setId(adminDTO.getId());
         userRepresentation.setUsername(adminDTO.getPhone());
-        userRepresentation.setFirstName(adminDTO.getName());
-        userRepresentation.setEmail(adminDTO.getEmail());
         userRepresentation.singleAttribute("phone", adminDTO.getPhone());
         if (Objects.nonNull(adminDTO.getRestaurantId())) {
             userRepresentation.singleAttribute("restaurantId", adminDTO.getRestaurantId().toString());
