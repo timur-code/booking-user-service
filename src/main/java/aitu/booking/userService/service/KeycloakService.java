@@ -33,6 +33,7 @@ import java.util.Map;
 @Service
 @Log4j2
 public class KeycloakService {
+    private volatile Keycloak instance;
 
     @Value("${keycloak.auth-server-url}")
     private String serverUrl;
@@ -56,8 +57,16 @@ public class KeycloakService {
     private String GROUP_RES_ADMIN = "restaurant_admins";
 
     public Keycloak getMasterKeycloakInstance() {
-        log.info("[KEYCLOAK] Server: {}", serverUrl);
-        return Keycloak.getInstance(serverUrl, masterRealmName, masterUsername, masterPassword, masterClientId);
+        Keycloak result = instance;
+        if (result == null) {
+            synchronized (this) {
+                result = instance;
+                if (result == null) {
+                    instance = result = Keycloak.getInstance(serverUrl, masterRealmName, masterUsername, masterPassword, masterClientId);
+                }
+            }
+        }
+        return result;
     }
 
     public UserRepresentation getUserById(String id) {
@@ -168,7 +177,7 @@ public class KeycloakService {
             return kc.tokenManager().getAccessToken();
         } catch (NotAuthorizedException e) {
             log.error("login error", e);
-            return null;
+            throw new ApiException(401, "login.error");
         }
     }
 

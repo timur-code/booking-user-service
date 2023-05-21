@@ -40,6 +40,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .authorizeRequests()
+                .anyRequest().permitAll()
+                .and()
                 .oauth2ResourceServer()
                 .jwt()
                 .jwtAuthenticationConverter(jwtAuthenticationConverter);
@@ -60,9 +63,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
 
-
             return roles;
         }
     }
-
 }
+
