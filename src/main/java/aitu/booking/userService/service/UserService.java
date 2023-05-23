@@ -96,7 +96,7 @@ public class UserService {
     //TODO:TEST
     public CreateRestaurantAdminDTO createRestaurantAdmin(CreateRestaurantAdminDTO adminDTO, String password, String token) throws InstanceAlreadyExistsException {
         if (!token.equals(serviceToken)) {
-            log.error("\ntoken: {}, \nreceived:{}", token, serviceToken);
+            log.error("\ntoken: {}, \nreceived:{}", serviceToken, token);
             throw new ApiException(403, "token.required");
         }
         log.info("Res admin: {}", adminDTO);
