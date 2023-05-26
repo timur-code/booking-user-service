@@ -90,7 +90,6 @@ public class UserController extends BaseController {
         return new ResponseSuccess();
     }
 
-    @Secured("ROLE_user")
     @PostMapping("/refresh")
     @Operation(summary = "Refresh token",
             description = "Get new access token by refresh token.")
