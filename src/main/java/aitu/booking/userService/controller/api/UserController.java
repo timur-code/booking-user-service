@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.validation.Valid;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -77,6 +78,13 @@ public class UserController extends BaseController {
     @ApiResponse(responseCode = "200", description = "Get user info by token.")
     public ResponseEntity<UserInfoDTO> loginUser(Authentication authentication) {
         UserInfoDTO user = userService.getMe(authentication);
+        return ResponseEntity.ok(user);
+    }
+
+    @Secured({"ROLE_admin", "ROLE_restaurant_admin"})
+    @GetMapping("/{userId}/info")
+    public ResponseEntity<UserInfoDTO> getPhoneById(@PathVariable UUID userId) {
+        UserInfoDTO user = userService.getInfoById(userId);
         return ResponseEntity.ok(user);
     }
 

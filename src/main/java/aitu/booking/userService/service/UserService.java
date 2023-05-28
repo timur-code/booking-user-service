@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +36,13 @@ public class UserService {
     public UserInfoDTO getMe(Authentication authentication) {
         String id = KeycloakUtils.getUserUuidFromAuth(authentication).toString();
         UserDTO dto = findById(id);
+        UserInfoDTO response = new UserInfoDTO();
+        BeanUtils.copyProperties(dto, response);
+        return response;
+    }
+
+    public UserInfoDTO getInfoById(UUID userId) {
+        UserDTO dto = findById(userId.toString());
         UserInfoDTO response = new UserInfoDTO();
         BeanUtils.copyProperties(dto, response);
         return response;
