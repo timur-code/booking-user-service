@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -82,10 +83,10 @@ public class UserController extends BaseController {
     }
 
     @Secured({"ROLE_admin", "ROLE_restaurant_admin"})
-    @GetMapping("/{userId}/info")
-    public ResponseEntity<UserInfoDTO> getPhoneById(@PathVariable UUID userId) {
-        UserInfoDTO user = userService.getInfoById(userId);
-        return ResponseEntity.ok(user);
+    @PostMapping("/info")
+    public ResponseEntity<List<UserInfoDTO>> getPhoneById(@RequestBody RequestUsersDTO dto) {
+        List<UserInfoDTO> users = userService.getUsersInfoById(dto);
+        return ResponseEntity.ok(users);
     }
 
     @Secured({"ROLE_user", "ROLE_admin"})

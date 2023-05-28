@@ -1,6 +1,7 @@
 package aitu.booking.userService.service;
 
 import aitu.booking.userService.dto.CreateRestaurantAdminDTO;
+import aitu.booking.userService.dto.RequestUsersDTO;
 import aitu.booking.userService.dto.UserInfoDTO;
 import aitu.booking.userService.dto.UserDTO;
 import aitu.booking.userService.exception.ApiException;
@@ -16,8 +17,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +48,12 @@ public class UserService {
         return response;
     }
 
+    public List<UserInfoDTO> getUsersInfoById(RequestUsersDTO dto) {
+        List<UserInfoDTO> list = new ArrayList<>(dto.getIdList().size());
+        dto.getIdList().forEach(id -> list.add(getInfoById(id)));
+        return list;
+    }
+
     //    @Cacheable(value = CacheConfig.CACHE_USER)
     public UserDTO findById(String id) {
         return KeycloakUtils.convertToUserDTO(keycloakService.getUserById(id));
@@ -55,10 +61,6 @@ public class UserService {
 
     public boolean existsByPhone(String phone) {
         return findUserByPhone(phone) != null;
-    }
-
-    public boolean existsByIin(String phone) {
-        throw new RuntimeException("Not implemented");
     }
 
     public List<UserDTO> search(String searchStr, Integer pageNum, Integer pageSize) {
