@@ -36,7 +36,7 @@ public class UserController extends BaseController {
 
     @PostMapping("/create/restaurant-admin")
     public ResponseEntity<CreateRestaurantAdminDTO> createRestaurantAdmin(@RequestBody CreateRestaurantAdminDTO adminDTO,
-                                                                                                   @RequestHeader(name = "service_token") String token) {
+                                                                          @RequestHeader(name = "service_token") String token) {
         try {
             return ResponseEntity.ok(userService.createRestaurantAdmin(adminDTO, adminDTO.getPassword(), token));
         } catch (InstanceAlreadyExistsException ex) {
@@ -55,6 +55,18 @@ public class UserController extends BaseController {
             return new ResponseUserDTO(user);
         } catch (InstanceAlreadyExistsException ex) {
             throw new ApiException(409, "user.exists");
+        }
+    }
+
+    @Secured({"ROLE_user"})
+    @PutMapping("/update")
+    public ResponseEntity<?> register(@RequestBody @Valid UpdateUserDTO userDTO,
+                                      Authentication authentication) {
+        try {
+            userService.update(userDTO, authentication);
+            return ResponseEntity.ok().build();
+        } catch (IllegalAccessException ex) {
+            return ResponseEntity.status(403).build();
         }
     }
 

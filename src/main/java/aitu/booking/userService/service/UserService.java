@@ -1,9 +1,6 @@
 package aitu.booking.userService.service;
 
-import aitu.booking.userService.dto.CreateRestaurantAdminDTO;
-import aitu.booking.userService.dto.RequestUsersDTO;
-import aitu.booking.userService.dto.UserInfoDTO;
-import aitu.booking.userService.dto.UserDTO;
+import aitu.booking.userService.dto.*;
 import aitu.booking.userService.exception.ApiException;
 import aitu.booking.userService.util.KeycloakUtils;
 import lombok.extern.log4j.Log4j2;
@@ -103,25 +100,22 @@ public class UserService {
         return user;
     }
 
-    //TODO:TEST
     public CreateRestaurantAdminDTO createRestaurantAdmin(CreateRestaurantAdminDTO adminDTO, String password, String token) throws InstanceAlreadyExistsException {
-//        if (!token.equals(serviceToken)) {
-//            log.error("\ntoken: {}, \nreceived:{}", serviceToken, token);
-//            throw new ApiException(403, "token.required");
-//        }
-        log.info("Res admin: {}", adminDTO);
         UserRepresentation userRepresentation = KeycloakUtils.convertToUserRepresentation(adminDTO);
         userRepresentation.setEnabled(true);
+        userRepresentation.setFirstName("Администратор");
+        userRepresentation.setLastName(".");
         KeycloakUtils.setUserRepresentationPassword(userRepresentation, password);
         String id = keycloakService.createRestaurantAdmin(userRepresentation);
         adminDTO.setId(id);
-
         adminDTO.setPassword(null);
         return adminDTO;
     }
 
     //    @CacheEvict(value = CacheConfig.CACHE_USER, key = "#user.id")
-    public void update(UserDTO user) {
+    public void update(UpdateUserDTO user, Authentication authentication) throws IllegalAccessException {
+        String id = KeycloakUtils.getUserUuidFromAuth(authentication).toString();
+        user.setId(id);
         keycloakService.updateUser(KeycloakUtils.convertToUserRepresentation(user));
     }
 

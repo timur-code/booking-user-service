@@ -1,6 +1,7 @@
 package aitu.booking.userService.util;
 
 import aitu.booking.userService.dto.CreateRestaurantAdminDTO;
+import aitu.booking.userService.dto.UpdateUserDTO;
 import aitu.booking.userService.dto.UserDTO;
 import lombok.extern.log4j.Log4j2;
 import org.keycloak.representations.idm.CredentialRepresentation;
@@ -31,6 +32,19 @@ public class KeycloakUtils {
     }
 
     public static UserRepresentation convertToUserRepresentation(UserDTO userDTO) {
+        UserRepresentation userRepresentation = new UserRepresentation();
+        userRepresentation.setId(userDTO.getId());
+        userRepresentation.setUsername(userDTO.getPhone());
+        userRepresentation.setFirstName(userDTO.getFirstName());
+        userRepresentation.setLastName(userDTO.getLastName());
+        userRepresentation.setEmail(userDTO.getEmail());
+        userRepresentation.singleAttribute("patronymic", StringUtils.hasLength(userDTO.getPatronymic()) ? userDTO.getPatronymic() : null);
+        userRepresentation.singleAttribute("phone", userDTO.getPhone());
+
+        return userRepresentation;
+    }
+
+    public static UserRepresentation convertToUserRepresentation(UpdateUserDTO userDTO) {
         UserRepresentation userRepresentation = new UserRepresentation();
         userRepresentation.setId(userDTO.getId());
         userRepresentation.setUsername(userDTO.getPhone());
